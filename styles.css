@@ -633,7 +633,27 @@ body {
     color: rgba(255, 255, 255, 0.7);
 }
 
-/* Animations */
+/* Basic Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
 @keyframes fadeInUp {
     from {
         opacity: 0;
@@ -643,6 +663,116 @@ body {
         opacity: 1;
         transform: translateY(0);
     }
+}
+
+/* Page load animation */
+body {
+    opacity: 0;
+    animation: fadeIn 0.6s ease-in-out forwards;
+}
+
+body.loaded {
+    opacity: 1;
+}
+
+/* Service cards animation */
+.service-card {
+    opacity: 0;
+    animation: slideUp 0.6s ease-out forwards;
+}
+
+body.loaded .service-card:nth-child(1) {
+    animation-delay: 0.1s;
+}
+
+body.loaded .service-card:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+body.loaded .service-card:nth-child(3) {
+    animation-delay: 0.3s;
+}
+
+body.loaded .service-card:nth-child(4) {
+    animation-delay: 0.4s;
+}
+
+body.loaded .service-card:nth-child(5) {
+    animation-delay: 0.5s;
+}
+
+body.loaded .service-card:nth-child(6) {
+    animation-delay: 0.6s;
+}
+
+/* Testimonial cards animation */
+.testimonial-card {
+    opacity: 0;
+    animation: slideUp 0.6s ease-out forwards;
+}
+
+body.loaded .testimonial-card:nth-child(1) {
+    animation-delay: 0.1s;
+}
+
+body.loaded .testimonial-card:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+body.loaded .testimonial-card:nth-child(3) {
+    animation-delay: 0.3s;
+}
+
+/* Navbar scrolled state */
+.navbar.scrolled {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Button hover animation */
+.btn {
+    transition: all 0.3s ease;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Card hover animation */
+.service-card,
+.testimonial-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.service-card:hover,
+.testimonial-card:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-xl);
+}
+
+/* Service icon pulse animation */
+.service-icon {
+    transition: transform 0.3s ease;
+}
+
+.service-card:hover .service-icon {
+    transform: scale(1.1);
+}
+
+/* Input focus animation */
+.form-group input:focus,
+.form-group textarea:focus {
+    transform: scale(1.02);
+    transition: all 0.3s ease;
+}
+
+/* Stats animation */
+.stat-item {
+    transition: transform 0.3s ease;
+}
+
+.stat-item:hover {
+    transform: scale(1.05);
 }
 
 /* Responsive Design */
@@ -747,4 +877,6 @@ body {
         font-size: 2.5rem;
     }
 }
+
+
 

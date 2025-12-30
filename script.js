@@ -31,57 +31,20 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     });
 });
 
-// Navbar scroll effect
-let lastScroll = 0;
-const navbar = document.querySelector('.navbar');
-
+// Navbar scroll effect - simple shadow change
 window.addEventListener('scroll', () => {
-    const currentScroll = window.pageYOffset;
-    
-    if (currentScroll > 100) {
-        navbar.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.1)';
+    const navbar = document.querySelector('.navbar');
+    if (window.pageYOffset > 100) {
+        navbar.classList.add('scrolled');
     } else {
-        navbar.style.boxShadow = '0 1px 3px rgba(0, 0, 0, 0.1)';
+        navbar.classList.remove('scrolled');
     }
-    
-    lastScroll = currentScroll;
-});
-
-// Intersection Observer for fade-in animations
-const observerOptions = {
-    threshold: 0.1,
-    rootMargin: '0px 0px -50px 0px'
-};
-
-const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-        if (entry.isIntersecting) {
-            entry.target.style.opacity = '1';
-            entry.target.style.transform = 'translateY(0)';
-        }
-    });
-}, observerOptions);
-
-// Observe service cards
-document.querySelectorAll('.service-card').forEach(card => {
-    card.style.opacity = '0';
-    card.style.transform = 'translateY(30px)';
-    card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
-    observer.observe(card);
-});
-
-// Observe testimonial cards
-document.querySelectorAll('.testimonial-card').forEach(card => {
-    card.style.opacity = '0';
-    card.style.transform = 'translateY(30px)';
-    card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
-    observer.observe(card);
 });
 
 // Form submission handler
 const contactForm = document.getElementById('contactForm');
 
-contactForm.addEventListener('submit', (e) => {
+contactForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     
     // Get form values
@@ -92,86 +55,49 @@ contactForm.addEventListener('submit', (e) => {
         message: document.getElementById('message').value
     };
     
-    // Here you would typically send the data to a server
-    // For now, we'll just show an alert
-    console.log('Form submitted:', formData);
+    // Get submit button to show loading state
+    const submitButton = contactForm.querySelector('button[type="submit"]');
+    const originalButtonText = submitButton.textContent;
     
-    // Show success message
-    alert('Thank you for your message! We will get back to you soon.');
+    // Disable button and show loading state
+    submitButton.disabled = true;
+    submitButton.textContent = 'Sending...';
     
-    // Reset form
-    contactForm.reset();
-});
-
-// Counter animation for stats
-const animateCounter = (element, target, duration = 2000) => {
-    let start = 0;
-    const increment = target / (duration / 16);
-    
-    const updateCounter = () => {
-        start += increment;
-        if (start < target) {
-            element.textContent = Math.floor(start) + (element.textContent.includes('%') ? '%' : '+');
-            requestAnimationFrame(updateCounter);
-        } else {
-            element.textContent = target + (element.textContent.includes('%') ? '%' : '+');
-        }
-    };
-    
-    updateCounter();
-};
-
-// Observe stats section
-const statsSection = document.querySelector('.hero-stats');
-if (statsSection) {
-    const statsObserver = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                const statNumbers = entry.target.querySelectorAll('.stat-number');
-                statNumbers.forEach(stat => {
-                    const text = stat.textContent;
-                    const number = parseInt(text.replace(/\D/g, ''));
-                    if (number && !stat.classList.contains('animated')) {
-                        stat.classList.add('animated');
-                        animateCounter(stat, number, 2000);
-                    }
-                });
-                statsObserver.unobserve(entry.target);
-            }
+    try {
+        // Send data to backend
+        const response = await fetch('http://localhost:3010/api/contact', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(formData)
         });
-    }, { threshold: 0.5 });
-    
-    statsObserver.observe(statsSection);
-}
-
-// Add active state to navigation links based on scroll position
-const sections = document.querySelectorAll('section[id]');
-
-window.addEventListener('scroll', () => {
-    const scrollY = window.pageYOffset;
-    
-    sections.forEach(section => {
-        const sectionHeight = section.offsetHeight;
-        const sectionTop = section.offsetTop - 100;
-        const sectionId = section.getAttribute('id');
         
-        if (scrollY > sectionTop && scrollY <= sectionTop + sectionHeight) {
-            navLinks.forEach(link => {
-                link.classList.remove('active');
-                if (link.getAttribute('href') === `#${sectionId}`) {
-                    link.classList.add('active');
-                }
-            });
+        const result = await response.json();
+        
+        if (result.success) {
+            // Show success message
+            alert(result.message || 'Thank you for your message! We will get back to you soon.');
+            // Reset form
+            contactForm.reset();
+        } else {
+            // Show error message
+            alert(result.message || 'An error occurred. Please try again.');
         }
-    });
-});
-
-// Add parallax effect to hero section
-window.addEventListener('scroll', () => {
-    const scrolled = window.pageYOffset;
-    const hero = document.querySelector('.hero');
-    if (hero && scrolled < hero.offsetHeight) {
-        hero.style.transform = `translateY(${scrolled * 0.5}px)`;
+    } catch (error) {
+        console.error('Error submitting form:', error);
+        alert('Failed to send message. Please make sure the server is running and try again.');
+    } finally {
+        // Re-enable button
+        submitButton.disabled = false;
+        submitButton.textContent = originalButtonText;
     }
 });
+
+// Simple fade-in animation on page load
+window.addEventListener('load', () => {
+    document.body.classList.add('loaded');
+});
+
+
 
